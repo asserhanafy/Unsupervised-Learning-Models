@@ -155,29 +155,3 @@ class Autoencoder:
         return self.forward(X)[0][-1]
 
 
-# =========================
-# Example Usage
-# =========================
-
-if __name__ == "__main__":
-    # Dummy data
-    X = np.random.rand(1000, 20)
-
-    # Autoencoder architecture
-    layers = [20, 64, 32, 8, 32, 64, 20]
-    activations = ["relu", "relu", "tanh", "relu", "relu", "sigmoid"]
-
-    ae = Autoencoder( 
-        layer_sizes=layers,
-        activations=activations,
-        learning_rate=0.01,
-        l2_lambda=0.001
-    )
-
-    ae.train(
-        X,
-        epochs=50,
-        batch_size=32,
-        lr_decay=0.9,
-        decay_step=10
-    )
