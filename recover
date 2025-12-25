@@ -1,0 +1,91 @@
+from sklearn.datasets import load_breast_cancer
+import gmm
+import Autoencoder
+import numpy as np
+import part3 as eval
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
+
+
+
+data = load_breast_cancer()
+X = data.data       # features
+y = data.target     # labels (0 = benign, 1 = malignant)
+    # Standardize using training statistics
+scaler = MinMaxScaler()
+X = scaler.fit_transform(X)
+
+
+bottleneck_sizes=[2, 5, 10, 15, 20]
+for size in bottleneck_sizes:
+    layers_sizes=[X.shape[1], 64, size, 64, X.shape[1]]
+    model_ae=Autoencoder.Autoencoder(layer_sizes=layers_sizes, activations=['sigmoid', 'sigmoid', 'sigmoid', 'sigmoid','sigmoid'])
+    model_ae.train(X)
+    X_Red=model_ae.encode(X)
+    gmm_results=gmm.fit_gmm(X_Red,n_components=2)
+    means=gmm_results["means"]
+    covariances=gmm_results["covariances"]
+    weights=gmm_results["weights"]  
+    labels=gmm.predict(X_Red,means,covariances,weights,'full')
+    ##Internal evaluation
+    
+    silhouette, sample_sil = eval.silhouette_score(X_Red, labels)
+    db = eval.davies_bouldin_index(X_Red, labels)
+    ch = eval.calinski_harabasz_index(X_Red, labels)
+    wcss = eval.within_cluster_sum_of_squares(X_Red , labels)
+    
+    ## BIC/AIC
+    bic, aic = eval.compute_bic_aic(
+    X_Red,
+    n_components=2, ##change to optimal @alaa
+    log_likelihood=gmm_results["log_likelihood"],
+    covariance_type="full"
+)
+    ## External evaluation
+    ari = eval.adjusted_rand_index(y, labels)
+
+    nmi = eval.normalized_mutual_information(y, labels)
+
+    purity = eval.purity_score(y, labels)
+    cm, true_classes, pred_clusters = eval.confusion_matrix(y, labels)
+    
+    ##AUtoencoder evaluation
+    X_recon = model_ae.reconstruct(X)
+    mse, rmse = eval.reconstruction_error(X, X_recon)
+    print("=" * 50)
+    print(f"Bottleneck size: {size}")
+
+    # Internal evaluation
+    print(f"Silhouette Score: {silhouette:.4f}")
+    print(f"Davies-Bouldin Index: {db:.4f}")
+    print(f"Calinski-Harabasz Index: {ch:.4f}")
+    print(f"WCSS: {wcss:.4f}")
+
+    # Model selection
+    print(f"BIC: {bic:.4f}")
+    print(f"AIC: {aic:.4f}")
+
+    # External evaluation
+    print(f"ARI: {ari:.4f}")
+    print(f"NMI: {nmi:.4f}")
+    print(f"Purity: {purity:.4f}")
+
+    print("Confusion Matrix:")
+    print(cm)
+
+    # Autoencoder reconstruction
+    print(f"MSE: {mse:.6f}")
+    print(f"RMSE: {rmse:.6f}")
+
+        
+    ##Visualization
+    eval.plot_2d_projection(
+    X_Red,
+    labels,
+    title="Autoencoder + GMM(bottleneck size={size})".format(size=size),
+    true_labels=y
+    )
+
+
+    
+    
+
