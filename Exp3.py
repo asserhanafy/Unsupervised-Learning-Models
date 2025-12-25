@@ -187,15 +187,54 @@ def main():
 
 	results = run_pca_kmeans(X, y_true, n_components_list, k=2, init="kmeans++")
 
-	# Identify best silhouette configuration for confusion matrix
-	best_idx = int(np.nanargmax(results["silhouette"]))
-	best_n = results["n_components"][best_idx]
-	best_labels = results["labels"][best_idx]
+	# Best-by-metric variables (_exp3):
+	best_sil_idx_exp3 = int(np.nanargmax(results["silhouette"]))
+	best_sil_n_exp3 = results["n_components"][best_sil_idx_exp3]
+	best_sil_value_exp3 = results["silhouette"][best_sil_idx_exp3]
+
+	best_dbi_idx_exp3 = int(np.nanargmin(results["davies_bouldin"]))
+	best_dbi_n_exp3 = results["n_components"][best_dbi_idx_exp3]
+	best_dbi_value_exp3 = results["davies_bouldin"][best_dbi_idx_exp3]
+
+	best_ch_idx_exp3 = int(np.nanargmax(results["calinski_harabasz"]))
+	best_ch_n_exp3 = results["n_components"][best_ch_idx_exp3]
+	best_ch_value_exp3 = results["calinski_harabasz"][best_ch_idx_exp3]
+
+	best_wcss_idx_exp3 = int(np.nanargmin(results["wcss"]))
+	best_wcss_n_exp3 = results["n_components"][best_wcss_idx_exp3]
+	best_wcss_value_exp3 = results["wcss"][best_wcss_idx_exp3]
+
+	best_ari_idx_exp3 = int(np.nanargmax(results["ari"]))
+	best_ari_n_exp3 = results["n_components"][best_ari_idx_exp3]
+	best_ari_value_exp3 = results["ari"][best_ari_idx_exp3]
+
+	best_nmi_idx_exp3 = int(np.nanargmax(results["nmi"]))
+	best_nmi_n_exp3 = results["n_components"][best_nmi_idx_exp3]
+	best_nmi_value_exp3 = results["nmi"][best_nmi_idx_exp3]
+
+	best_purity_idx_exp3 = int(np.nanargmax(results["purity"]))
+	best_purity_n_exp3 = results["n_components"][best_purity_idx_exp3]
+	best_purity_value_exp3 = results["purity"][best_purity_idx_exp3]
+
+	# Confusion matrix from best silhouette configuration
+	best_labels = results["labels"][best_sil_idx_exp3]
 	cm, true_classes, pred_clusters = part3.confusion_matrix(y_true, best_labels)
 
-	print(f"Best silhouette at n_components={best_n}: score={results['silhouette'][best_idx]:.3f}")
-	print(f"Reconstruction error={results['reconstruction_error'][best_idx]:.4f}, "
-		  f"Explained variance={results['explained_variance'][best_idx]:.3f}")
+	print(
+		f"Best-by-metric (_exp3): "
+		f"Silhouette n={best_sil_n_exp3} v={best_sil_value_exp3:.3f}; "
+		f"DBI n={best_dbi_n_exp3} v={best_dbi_value_exp3:.3f}; "
+		f"CH n={best_ch_n_exp3} v={best_ch_value_exp3:.3f}; "
+		f"WCSS n={best_wcss_n_exp3} v={best_wcss_value_exp3:.1f}; "
+		f"ARI n={best_ari_n_exp3} v={best_ari_value_exp3:.3f}; "
+		f"NMI n={best_nmi_n_exp3} v={best_nmi_value_exp3:.3f}; "
+		f"Purity n={best_purity_n_exp3} v={best_purity_value_exp3:.3f}"
+	)
+
+	print(
+		f"Reconstruction error at best silhouette={results['reconstruction_error'][best_sil_idx_exp3]:.4f}, "
+		f"Explained variance at best silhouette={results['explained_variance'][best_sil_idx_exp3]:.3f}"
+	)
 
 	plot_reconstruction_and_variance(
 		results["n_components"],
@@ -205,7 +244,7 @@ def main():
 
 	plot_clustering_metrics(results["n_components"], results)
 
-	title = f"Confusion Matrix (best silhouette, n_components={best_n})"
+	title = f"Confusion Matrix (best silhouette, n_components={best_sil_n_exp3})"
 	plot_confusion(cm, true_classes, pred_clusters, title)
 
 	# 2D visualization for n_components = 2
