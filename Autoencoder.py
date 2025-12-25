@@ -41,10 +41,7 @@ class Autoencoder:
         learning_rate=0.01,
         l2_lambda=0.001
     ):
-        """
-        layer_sizes: list (e.g. [784, 256, 128, 32, 128, 256, 784])
-        activations: list of activation names per layer (excluding input)
-        """
+       
         self.layer_sizes = layer_sizes
         self.activations = activations
         self.learning_rate = learning_rate
@@ -124,7 +121,7 @@ class Autoencoder:
     # =========================
     def train(self,X,epochs=50,batch_size=32,lr_decay=0.95, decay_step=10):
         n_samples = X.shape[0]
-
+        loss_history = []
         for epoch in range(epochs):
             indices = np.random.permutation(n_samples)
             X_shuffled = X[indices]
@@ -141,7 +138,9 @@ class Autoencoder:
                 self.learning_rate *= lr_decay
 
             loss = np.mean((self.forward(X)[0][-1] - X) ** 2)
+            loss_history.append(loss)
             print(f"Epoch {epoch+1}/{epochs}, Loss: {loss:.6f}, LR: {self.learning_rate:.6f}")
+        return loss_history
 
     # =========================
     # Encode / Decode
