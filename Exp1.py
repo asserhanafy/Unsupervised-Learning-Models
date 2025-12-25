@@ -291,16 +291,6 @@ def main():
 		best_dbi_k_exp1 = k_values[idx_dbi_exp1]
 		best_dbi_value_exp1 = res["davies_bouldin"][idx_dbi_exp1]
 
-		print(
-			f"Init={init_method} best-by-metric: "
-			f"ARI k={best_ari_k_exp1} v={best_ari_value_exp1:.3f}; "
-			f"NMI k={best_nmi_k_exp1} v={best_nmi_value_exp1:.3f}; "
-			f"Purity k={best_purity_k_exp1} v={best_purity_value_exp1:.3f}; "
-			f"Silhouette k={best_sil_k_exp1} v={best_sil_value_exp1:.3f}; "
-			f"CH k={best_ch_k_exp1} v={best_ch_value_exp1:.3f}; "
-			f"WCSS k={best_wcss_k_exp1} v={best_wcss_value_exp1:.1f}; "
-			f"DBI k={best_dbi_k_exp1} v={best_dbi_value_exp1:.3f}"
-		)
 
 	plot_metric_curves(k_values, results)
 	plot_internal_metrics(k_values, results)
