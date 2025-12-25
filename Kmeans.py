@@ -6,6 +6,7 @@ class KMeans:
         self.max_iter = max_iter
         self.tol = tol
         self.init = init
+        self.iterations_ = 0
 
     def _init_random(self, X):
         idx = np.random.choice(len(X), self.k, replace=False)
@@ -18,7 +19,17 @@ class KMeans:
                 np.linalg.norm(X[:, None] - np.array(centroids), axis=2) ** 2,
                 axis=1
             )
-            probs = dist / np.sum(dist)
+            total = np.sum(dist)
+            if total == 0:
+                # All points coincide with existing centroid(s); fall back to uniform choice.
+                probs = np.full(len(X), 1 / len(X))
+            else:
+                probs = dist / total
+
+            # If any numerical issues remain (NaN), revert to uniform.
+            if not np.all(np.isfinite(probs)):
+                probs = np.full(len(X), 1 / len(X))
+
             centroids.append(X[np.random.choice(len(X), p=probs)])
         return np.array(centroids)
 
@@ -45,6 +56,7 @@ class KMeans:
                 break
 
             self.centroids_ = new_centroids
+            self.iterations_ += 1
 
         self.labels_ = labels
         self.inertia_ = self.inertia_history_[-1]
