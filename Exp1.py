@@ -262,6 +262,46 @@ def main():
 		best_sil_k = k_values[int(np.nanargmax(res["silhouette"]))]
 		print(f"Init={init_method}: elbow k={elbow_k}, silhouette-opt k={best_sil_k}")
 
+		# Best-by-metric (from part3.py): max for all except WCSS and DBI (min)
+		idx_ari_exp1 = int(np.nanargmax(res["ari"]))
+		best_ari_k_exp1 = k_values[idx_ari_exp1]
+		best_ari_value_exp1 = res["ari"][idx_ari_exp1]
+
+		idx_nmi_exp1 = int(np.nanargmax(res["nmi"]))
+		best_nmi_k_exp1 = k_values[idx_nmi_exp1]
+		best_nmi_value_exp1 = res["nmi"][idx_nmi_exp1]
+
+		idx_purity_exp1 = int(np.nanargmax(res["purity"]))
+		best_purity_k_exp1 = k_values[idx_purity_exp1]
+		best_purity_value_exp1 = res["purity"][idx_purity_exp1]
+
+		idx_sil_exp1 = int(np.nanargmax(res["silhouette"]))
+		best_sil_k_exp1 = k_values[idx_sil_exp1]
+		best_sil_value_exp1 = res["silhouette"][idx_sil_exp1]
+
+		idx_ch_exp1 = int(np.nanargmax(res["calinski_harabasz"]))
+		best_ch_k_exp1 = k_values[idx_ch_exp1]
+		best_ch_value_exp1 = res["calinski_harabasz"][idx_ch_exp1]
+
+		idx_wcss_exp1 = int(np.nanargmin(res["wcss"]))
+		best_wcss_k_exp1 = k_values[idx_wcss_exp1]
+		best_wcss_value_exp1 = res["wcss"][idx_wcss_exp1]
+
+		idx_dbi_exp1 = int(np.nanargmin(res["davies_bouldin"]))
+		best_dbi_k_exp1 = k_values[idx_dbi_exp1]
+		best_dbi_value_exp1 = res["davies_bouldin"][idx_dbi_exp1]
+
+		print(
+			f"Init={init_method} best-by-metric: "
+			f"ARI k={best_ari_k_exp1} v={best_ari_value_exp1:.3f}; "
+			f"NMI k={best_nmi_k_exp1} v={best_nmi_value_exp1:.3f}; "
+			f"Purity k={best_purity_k_exp1} v={best_purity_value_exp1:.3f}; "
+			f"Silhouette k={best_sil_k_exp1} v={best_sil_value_exp1:.3f}; "
+			f"CH k={best_ch_k_exp1} v={best_ch_value_exp1:.3f}; "
+			f"WCSS k={best_wcss_k_exp1} v={best_wcss_value_exp1:.1f}; "
+			f"DBI k={best_dbi_k_exp1} v={best_dbi_value_exp1:.3f}"
+		)
+
 	plot_metric_curves(k_values, results)
 	plot_internal_metrics(k_values, results)
 	plot_convergence(k_values, results)
